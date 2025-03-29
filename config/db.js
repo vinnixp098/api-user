@@ -13,5 +13,10 @@ const conexao = new Pool({
   }
 });
 
+// Testa a conexão
+conexao.connect()
+  .then(() => console.log('Conectado ao banco de dados com sucesso!'))
+  .catch((err) => console.error('Erro de conexão ao banco de dados:', err));
+
 // Exporta a conexão para uso em outras partes do projeto
 export default conexao;
