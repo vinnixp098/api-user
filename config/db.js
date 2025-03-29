@@ -7,11 +7,12 @@ dotenv.config();
 
 // Cria a pool de conexões para PostgreSQL
 const conexao = new Pool({
-  connectionString: process.env.DATABASE_URL,  // Usa a variável de ambiente DATABASE_URL
+  connectionString: process.env.DATABASE_URL,  // No Vercel, a variável de ambiente deve estar configurada corretamente
   ssl: {
-    rejectUnauthorized: false  // Necessário para conexões com SSL (usado no Neon)
+    rejectUnauthorized: false  // Necessário para conectar com o Neon (e outros serviços em cloud)
   }
 });
+
 
 // Testa a conexão
 conexao.connect()
