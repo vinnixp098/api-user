@@ -1,35 +1,35 @@
 import { query } from 'express';
 import conexao from '../config/db.js';
 
-const createUSer = async (nome, usuario, email, senha) => {
-  const [existingUsers] = await conexao.query('SELECT * FROM estudos.usuarios WHERE usuario = ?', [usuario]);
+const createUser = async (nome, usuario, email, senha) => {
+  const [existingUsers] = await conexao.query('SELECT * FROM teste.usuarios WHERE usuario = ?', [usuario]);
 
   if (existingUsers.length > 0) {
     return { status: 400, message: 'Usuário já existe' };
   }
 
-  const [result] = await conexao.query('INSERT INTO estudos.usuarios (nome, usuario, email, senha) VALUES (?, ?, ?, ?)', [nome, usuario, email, senha]);
+  const [result] = await conexao.query('INSERT INTO teste.usuarios (nome, usuario, email, senha) VALUES (?, ?, ?, ?)', [nome, usuario, email, senha]);
 
   return { status: 201, message: 'Usuário criado com sucesso', data: result };
 };
 
 
 
-
 const getAllUsers = async () => {
-  const [rows] = await conexao.query('SELECT * FROM usuarios');
+  const [rows] = await conexao.query('SELECT * FROM teste.usuarios');
   return rows;
 };
 
+
 const getUserByUserName = async (usuario, senha) => {
-  const [rows] = await conexao.query('SELECT * FROM estudos.usuarios WHERE usuario = ? and senha = ?', [usuario, senha]);
+  const [rows] = await conexao.query('SELECT * FROM teste.usuarios WHERE usuario = ? and senha = ?', [usuario, senha]);
   return rows;
 };
 
 const editUserById = async (nome, sobrenome, email, id) => {
   try {
     const query = `
-      UPDATE estudos.clientes 
+      UPDATE teste.clientes 
       SET nome = ?, sobrenome = ?, email = ?, data_edicao = NOW()
       WHERE usuario_id = ?
     `;
@@ -52,7 +52,7 @@ const deleteUSerById = async (id, excluido) => {
       throw new Error("O ID do usuário não foi fornecido.");
     }
 
-    const [result] = await conexao.query('DELETE FROM clientes WHERE usuario_id = ?', [id]);
+    const [result] = await conexao.query('DELETE FROM teste.usuarios WHERE usuario_id = ?', [id]);
 
     if (result && result.affectedRows === 0) {
       console.log(`Nenhum usuário encontrado com o ID: ${id}`);
@@ -68,7 +68,7 @@ const deleteUSerById = async (id, excluido) => {
 
 
 export default {
-  createUSer, 
+  createUser, 
   getAllUsers,
   getUserByUserName,
   editUserById,
