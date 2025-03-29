@@ -10,18 +10,20 @@ const createUser = async (nome, usuario, email, senha) => {
       return { status: 400, message: 'Usuário já existe' };
     }
 
-    // Insere o novo usuário
+    // Insere o novo usuário e retorna os dados inseridos
     const insertResult = await conexao.query(
       'INSERT INTO usuarios (nome, usuario, email, senha) VALUES ($1, $2, $3, $4) RETURNING *',
       [nome, usuario, email, senha]
     );
 
+    // Retorna o usuário inserido
     return { status: 201, message: 'Usuário criado com sucesso', data: insertResult.rows[0] };
   } catch (error) {
     console.error('Erro ao criar usuário:', error);
     return { status: 500, message: 'Erro ao criar usuário', error: error.message };
   }
 };
+
 
 // Função para obter todos os usuários
 const getAllUsers = async () => {
@@ -86,7 +88,7 @@ const deleteUserById = async (id) => {
 };
 
 export default {
-  createUser, 
+  createUser,
   getAllUsers,
   getUserByUserName,
   editUserById,
