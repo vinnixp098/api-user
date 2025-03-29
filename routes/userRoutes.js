@@ -5,7 +5,8 @@ import UserController from '../controllers/userController.js';
 router.get('/usuarios', UserController.getAllUsers);
 router.post('/editar-nome', UserController.editUserById);
 router.post('/cadastro', UserController.createUSer);
-router.post('/login', UserController.getUserByUserName);
-router.post('/deletar-usuario', UserController.deleteUSerById);
+router.get('/getUser', UserController.getUserByUserName);
+router.post('/signUser', UserController.signInUser);
+router.post('/deletar-usuario', UserController.deleteUserById);
 
 export default router;
