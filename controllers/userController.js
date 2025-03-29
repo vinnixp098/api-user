@@ -8,14 +8,17 @@ const createUSer = async (req, res) => {
     const result = await UserModel.createUser(nome, usuario, email, senha);
 
     if (!result.data) {
-      return res
-        .status(400)
-        .json({ message: "Já existe um usuário com esse nome" });
+      return res.status(400).json({
+        status: "error",
+        message: "Já existe um usuário com esse nome",
+        data: null,
+      });
     }
 
     res.status(201).json({
+      status: "success",
       message: "Usuário cadastrado com sucesso",
-      usuario: result.data,
+      usuario: null,
     });
   } catch (err) {
     res.status(500).json({ error: err.message });
@@ -23,10 +26,10 @@ const createUSer = async (req, res) => {
 };
 
 const deleteUserById = async (req, res) => {
-  const { usuario_id, excluido } = req.body;
+  const { usuario_id } = req.query;
   try {
-    const result = await UserModel.deleteUserById(usuario_id, excluido);
-    if (result.affectedRows === 0) {
+    const result = await UserModel.deleteUserById(usuario_id);
+    if (result.rows === 0) {
       return res
         .status(404)
         .json({ message: "Não foi possível deletar o usuário" });
@@ -41,7 +44,7 @@ const getUserByUserName = async (req, res) => {
   const { usuario } = req.body;
   try {
     const result = await UserModel.getUserByUserName(usuario);
-    if (result.affectedRows === 0) {
+    if (result.rows === 0) {
       return res
         .status(404)
         .json({ message: "Não foi possível encontrar o usuário" });
@@ -60,12 +63,17 @@ const signInUser = async (req, res) => {
   const { usuario, senha } = req.body;
   try {
     const result = await UserModel.signInUser(usuario, senha);
-    if (result.affectedRows === 0) {
+    if (result.length === 0) {
       return res
-        .status(404)
-        .json({ message: "Não foi possível realizar o login" });
+        .status(400)
+        .json({
+          status: "error",
+          message: "Não foi possível realizar o login",
+          data: null,
+        });
     }
     res.json({
+      status: "success",
       message: "Login realizado com sucesso",
       data: result,
     });
@@ -81,6 +89,7 @@ const getAllUsers = async (req, res) => {
       return res.status(404).json({ message: "Nenhum usuário encontrado" });
     }
     res.json({
+      status: "success",
       message: "Usuários encontrados",
       data: users, // Envia os usuários no corpo da resposta
     });

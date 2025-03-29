@@ -1,9 +1,9 @@
 import express from "express";
 import conexao from "../config/db.js";
+import crypto from "crypto";
 
 const createUser = async (nome, usuario, email, senha) => {
   try {
-    // Verifica se o usuário já existe
     const { rows: existingUsers } = await conexao.query(
       "SELECT usuario FROM usuarios WHERE usuario = $1",
       [usuario]
@@ -13,10 +13,11 @@ const createUser = async (nome, usuario, email, senha) => {
       return { status: 400, message: "Usuário já existe" };
     }
 
-    // Insere o novo usuário e retorna os dados inseridos
+    const token = crypto.createHash("md5").update(email + Date.now()).digest("hex");
+
     const { rows: result } = await conexao.query(
-      "INSERT INTO usuarios (nome, usuario, email, senha) VALUES ($1, $2, $3, $4) RETURNING *",
-      [nome, usuario, email, senha]
+      "INSERT INTO usuarios (nome, usuario, email, senha, token) VALUES ($1, $2, $3, $4, $5) RETURNING *",
+      [nome, usuario, email, senha, token]
     );
 
     return {
@@ -34,12 +35,13 @@ const createUser = async (nome, usuario, email, senha) => {
   }
 };
 
+
 const getAllUsers = async () => {
   try {
     const result = await conexao.query(
       "SELECT * FROM usuarios WHERE excluido = 0"
     );
-    return result.rows; // Retorna os dados (linhas) diretamente
+    return result.rows;
   } catch (error) {
     console.error("Erro ao obter usuários:", error);
     return {
@@ -71,11 +73,11 @@ const getUserByUserName = async (usuario) => {
 const signInUser = async (usuario, senha) => {
   try {
     const { rows } = await conexao.query(
-      "SELECT usuario_id, nome, usuario, email, telefone, admin, instrutor FROM usuarios WHERE usuario = $1 AND senha = $2",
+      "SELECT usuario_id, nome, usuario, email, telefone, admin, instrutor FROM usuarios WHERE usuario = $1 AND senha = $2 AND excluido = 0",
       [usuario, senha]
     );
 
-    return rows.length > 0 ? rows[0] : null;
+    return rows.length > 0 ? rows[0] : [];
   } catch (error) {
     console.error("Erro ao realizar login:", error);
     return {
@@ -120,20 +122,16 @@ const editUserById = async (nome, usuario, email, usuario_id, telefone) => {
   }
 };
 
-const deleteUserById = async (usuario_id, excluido) => {
+const deleteUserById = async (usuario_id) => {
   try {
-    // if (!usuario_id) {
-    //   throw new Error("O ID do usuário não foi fornecido.");
-    // }
-
     const query = `
         UPDATE usuarios 
-        SET excluido = $1
-        WHERE usuario_id = $2
+        SET excluido = 1
+        WHERE usuario_id = $1
         RETURNING *
       `;
 
-    const { rows } = await conexao.query(query, [usuario_id, excluido]);
+    const { rows } = await conexao.query(query, [usuario_id]);
 
     return rows.length > 0
       ? {
