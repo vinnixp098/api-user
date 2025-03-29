@@ -2,7 +2,7 @@ import { query } from 'express';
 import conexao from '../config/db.js';
 
 const createUSer = async (nome, usuario, email, senha) => {
-  const [existingUsers] = await conexao.query('SELECT * FROM estudos.usuarios WHERE usuario = ?', [usuario]); 
+  const [existingUsers] = await conexao.query('SELECT * FROM estudos.usuarios WHERE usuario = ?', [usuario]);
 
   if (existingUsers.length > 0) {
     return { status: 400, message: 'Usuário já existe' };
@@ -14,8 +14,15 @@ const createUSer = async (nome, usuario, email, senha) => {
 };
 
 
+
+
+const getAllUsers = async () => {
+  const [rows] = await conexao.query('SELECT * FROM usuarios');
+  return rows;
+};
+
 const getUserByUserName = async (usuario, senha) => {
-  const [rows] = await conexao.query('SELECT * FROM estudos.usuarios WHERE usuario = ? and senha = ?', [usuario, senha]); 
+  const [rows] = await conexao.query('SELECT * FROM estudos.usuarios WHERE usuario = ? and senha = ?', [usuario, senha]);
   return rows;
 };
 
@@ -30,7 +37,7 @@ const editUserById = async (nome, sobrenome, email, id) => {
     const [result] = await conexao.query(query, [nome, sobrenome, email, id]);
     return result;
 
-   
+
   } catch (error) {
     console.error('Erro ao atualizar o usuário:', error);
   }
@@ -61,7 +68,8 @@ const deleteUSerById = async (id, excluido) => {
 
 
 export default {
-  createUSer,
+  createUSer, 
+  getAllUsers,
   getUserByUserName,
   editUserById,
   deleteUSerById

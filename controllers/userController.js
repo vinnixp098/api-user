@@ -45,6 +45,23 @@ const getUserByUserName = async (req, res) => {
 	}
 };
 
+const getAllUsers = async (req, res) => {
+	// const {usuario, senha} = req.body;
+	try {
+		const result = await UserModel.getAllUsers();
+		if (result.affectedRows === 0) {
+			return res.status(404).json({ message: 'Não foi possível trazer os usuários' });
+		}
+		res.json({ 
+			message: 'Usuários encontrados',
+			data: result
+
+		});
+	} catch (err) {
+		res.status(500).json({ error: err.message });
+	}
+}
+
 const editUserById = async (req, res) => {
 	const { nome, sobrenome, email, usuario_id } = req.body;
 	try {
@@ -60,6 +77,7 @@ const editUserById = async (req, res) => {
 
 export default {
 	createUSer,
+	getAllUsers,
 	getUserByUserName,
 	editUserById,
 	deleteUSerById
