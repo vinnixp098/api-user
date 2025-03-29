@@ -18,7 +18,13 @@ app.get('/test', (req, res) => {
   res.send('API está funcionando!');
 });
 
-// Exportando a função de handler para o Vercel
+// Rodar o servidor localmente na porta 5000 (ou qualquer outra porta de sua escolha)
+const port = 5000;
+app.listen(port, () => {
+  console.log(`Servidor rodando na porta http://localhost:${port}`);
+});
+
+// Exportando a função de handler para o Vercel (caso queira usar na Vercel também)
 export default (req, res) => {
   app(req, res);  // Lida com a requisição e resposta via Express
 };

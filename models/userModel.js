@@ -1,3 +1,4 @@
+import express from 'express';
 import conexao from '../config/db.js';
 
 const createUser = async (nome, usuario, email, senha) => {
@@ -19,13 +20,14 @@ const createUser = async (nome, usuario, email, senha) => {
 
 const getAllUsers = async () => {
   try {
-    const [rows] = await conexao.query('SELECT * FROM usuarios');
-    return rows;  // Certifique-se de que 'rows' é um array
+    const result = await conexao.query('SELECT * FROM usuarios');
+    return result.rows;  // Retorna os dados (linhas) diretamente
   } catch (error) {
     console.error('Erro ao obter usuários:', error);
     return { status: 500, message: 'Erro ao obter usuários', error: error.message };
   }
 };
+
 
 const getUserByUserName = async (usuario, senha) => {
   try {

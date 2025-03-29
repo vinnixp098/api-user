@@ -46,21 +46,21 @@ const getUserByUserName = async (req, res) => {
 };
 
 const getAllUsers = async (req, res) => {
-	// const {usuario, senha} = req.body;
 	try {
-		const result = await UserModel.getAllUsers();
-		if (result.affectedRows === 0) {
-			return res.status(404).json({ message: 'Não foi possível trazer os usuários' });
-		}
-		res.json({ 
-			message: 'Usuários encontrados',
-			data: result
-
-		});
+	  const users = await UserModel.getAllUsers();  // Obtém os usuários
+	  if (!users || users.length === 0) {
+		return res.status(404).json({ message: 'Nenhum usuário encontrado' });
+	  }
+	  res.json({
+		message: 'Usuários encontrados',
+		data: users,  // Envia os usuários no corpo da resposta
+	  });
 	} catch (err) {
-		res.status(500).json({ error: err.message });
+	  console.error('Erro ao buscar usuários:', err);
+	  res.status(500).json({ error: err.message });
 	}
-}
+  };
+  
 
 const editUserById = async (req, res) => {
 	const { nome, sobrenome, email, usuario_id } = req.body;
