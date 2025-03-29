@@ -1,6 +1,6 @@
 import UserModel from '../models/userModel.js';
 
-const createUser = async (req, res) => {
+const createUSer = async (req, res) => {
 	const { nome, usuario, email, senha } = req.body;
 	console.log(nome, usuario, email, senha)
 	try {
@@ -76,7 +76,7 @@ const editUserById = async (req, res) => {
 };
 
 export default {
-	createUser,
+	createUSer,
 	getAllUsers,
 	getUserByUserName,
 	editUserById,
