@@ -1,60 +1,67 @@
-import { query } from 'express';
 import conexao from '../config/db.js';
 
 const createUser = async (nome, usuario, email, senha) => {
-  const [existingUsers] = await conexao.query('SELECT * FROM usuarios WHERE usuario = ?', [usuario]);
+  try {
+    const [existingUsers] = await conexao.query('SELECT * FROM usuarios WHERE usuario = ?', [usuario]);
 
-  if (existingUsers.length > 0) {
-    return { status: 400, message: 'Usuário já existe' };
+    if (existingUsers.length > 0) {
+      return { status: 400, message: 'Usuário já existe' };
+    }
+
+    const [result] = await conexao.query('INSERT INTO usuarios (nome, usuario, email, senha) VALUES (?, ?, ?, ?)', [nome, usuario, email, senha]);
+
+    return { status: 201, message: 'Usuário criado com sucesso', data: result };
+  } catch (error) {
+    console.error('Erro ao criar usuário:', error);
+    return { status: 500, message: 'Erro ao criar usuário', error: error.message };
   }
-
-  const [result] = await conexao.query('INSERT INTO usuarios (nome, usuario, email, senha) VALUES (?, ?, ?, ?)', [nome, usuario, email, senha]);
-
-  return { status: 201, message: 'Usuário criado com sucesso', data: result };
 };
-
 
 const getAllUsers = async () => {
-  const [rows] = await conexao.query('SELECT * FROM usuarios');
-  return rows;
+  try {
+    const [rows] = await conexao.query('SELECT * FROM usuarios');
+    return rows;  // Certifique-se de que 'rows' é um array
+  } catch (error) {
+    console.error('Erro ao obter usuários:', error);
+    return { status: 500, message: 'Erro ao obter usuários', error: error.message };
+  }
 };
 
-
 const getUserByUserName = async (usuario, senha) => {
-  const [rows] = await conexao.query('SELECT * FROM usuarios WHERE usuario = ? and senha = ?', [usuario, senha]);
-  return rows;
+  try {
+    const [rows] = await conexao.query('SELECT * FROM usuarios WHERE usuario = ? and senha = ?', [usuario, senha]);
+    return rows;
+  } catch (error) {
+    console.error('Erro ao buscar usuário:', error);
+    return { status: 500, message: 'Erro ao buscar usuário', error: error.message };
+  }
 };
 
 const editUserById = async (nome, sobrenome, email, id) => {
   try {
     const query = `
-      UPDATE clientes 
+      UPDATE usuarios 
       SET nome = ?, sobrenome = ?, email = ?, data_edicao = NOW()
-      WHERE usuario_id = ?
+      WHERE id = ?
     `;
 
     const [result] = await conexao.query(query, [nome, sobrenome, email, id]);
     return result;
-
-
   } catch (error) {
     console.error('Erro ao atualizar o usuário:', error);
+    return { status: 500, message: 'Erro ao atualizar o usuário', error: error.message };
   }
 };
 
-
-const deleteUSerById = async (id, excluido) => {
+const deleteUserById = async (id) => {
   try {
-    console.log("Id:", id);
-
     if (!id) {
       throw new Error("O ID do usuário não foi fornecido.");
     }
 
-    const [result] = await conexao.query('DELETE FROM usuarios WHERE usuario_id = ?', [id]);
+    const [result] = await conexao.query('DELETE FROM usuarios WHERE id = ?', [id]);
 
     if (result && result.affectedRows === 0) {
-      console.log(`Nenhum usuário encontrado com o ID: ${id}`);
       return { message: `Nenhum usuário encontrado com o ID: ${id}` };
     }
 
@@ -65,11 +72,10 @@ const deleteUSerById = async (id, excluido) => {
   }
 };
 
-
 export default {
   createUser, 
   getAllUsers,
   getUserByUserName,
   editUserById,
-  deleteUSerById
+  deleteUserById
 };
