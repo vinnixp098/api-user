@@ -1,6 +1,7 @@
 import express from 'express';
 import cors from 'cors';
-import userRoutes from './routes/userRoutes.js';
+import studentRoutes from './src/routes/students/studentRoutes.js';
+import userRoutes from './src/routes/users/userRoutes.js';
 
 const app = express();
 
@@ -11,7 +12,10 @@ app.use(cors());
 app.use(express.json());
 
 // Middleware para rotas de usuário
-app.use('/api', userRoutes);
+app.use('/api/user', userRoutes);
+
+// Middleware para rotas de alunos
+app.use('/api/student/', studentRoutes);
 
 // Função para lidar com a requisição HTTP
 app.get('/test', (req, res) => {

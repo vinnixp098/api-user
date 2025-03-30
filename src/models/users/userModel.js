@@ -1,5 +1,5 @@
 import express from "express";
-import conexao from "../config/db.js";
+import conexao from "../../../config/db.js";
 import crypto from "crypto";
 
 const createUser = async (nome, usuario, email, senha) => {
