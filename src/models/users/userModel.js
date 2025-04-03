@@ -73,7 +73,7 @@ const getUserByUserName = async (usuario) => {
 const signInUser = async (usuario, senha) => {
   try {
     const { rows } = await conexao.query(
-      "SELECT usuario_id, nome, usuario, email, telefone, admin, instrutor FROM usuarios WHERE usuario = $1 AND senha = $2 AND excluido = 0",
+      "SELECT usuario_id, nome, usuario, email, telefone, admin, instrutor, token FROM usuarios WHERE usuario = $1 AND senha = $2 AND excluido = 0",
       [usuario, senha]
     );
 
@@ -87,6 +87,24 @@ const signInUser = async (usuario, senha) => {
     };
   }
 };
+
+const signInUserByToken = async (token) => {
+  try {
+    const { rows } = await conexao.query(
+      "SELECT usuario_id, nome, usuario, email, telefone, admin, instrutor, token FROM usuarios WHERE token = $1 AND excluido = 0",
+      [token]
+    );
+
+    return rows.length > 0 ? rows[0] : [];
+  } catch (error) {
+    console.error("Erro ao recuperar usuário pelo token:", error);
+    return {
+      status: 500,
+      message: "Erro ao recuperar usuário pelo token",
+      error: error.message,
+    };
+  }
+}
 
 const editUserById = async (nome, usuario, email, usuario_id, telefone) => {
   try {
@@ -153,6 +171,7 @@ const deleteUserById = async (usuario_id) => {
 export default {
   createUser,
   signInUser,
+  signInUserByToken,
   getAllUsers,
   getUserByUserName,
   editUserById,

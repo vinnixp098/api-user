@@ -82,6 +82,29 @@ const signInUser = async (req, res) => {
   }
 };
 
+const signInUserByToken = async (req, res) => {
+  const { token } = req.query;
+  try {
+    const result = await UserModel.signInUserByToken(token);
+    if (result.length === 0) {
+      return res
+        .status(400)
+        .json({
+          status: "error",
+          message: "Erro ao recuperar usuário pelo token",
+          data: null,
+        });
+    }
+    res.json({
+      status: "success",
+      message: "Usuário recuperado pelo token com sucesso",
+      data: result,
+    });
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 const getAllUsers = async (req, res) => {
   try {
     const users = await UserModel.getAllUsers(); // Obtém os usuários
@@ -121,6 +144,7 @@ const editUserById = async (req, res) => {
 export default {
   createUSer,
   signInUser,
+  signInUserByToken,
   getAllUsers,
   getUserByUserName,
   editUserById,
