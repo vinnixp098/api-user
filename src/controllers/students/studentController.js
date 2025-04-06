@@ -1,11 +1,11 @@
 import StudentModel from "../../models/students/studentModel.js";
 
 const createStudent = async (req, res) => {
-    const { nome, cpf, categoria, categoria_descricao, data_inicio_processo, data_final_processo, data_matricula } = req.body;
-    console.log(nome, cpf, categoria, categoria_descricao, data_inicio_processo, data_final_processo, data_matricula);
+    const { nome, cpf, telefone, categoria, data_inicio_processo, data_final_processo } = req.body;
+    console.log(nome, cpf, telefone, categoria, data_inicio_processo, data_final_processo);
 
     try {
-        const result = await StudentModel.createStudent(nome, cpf, categoria, categoria_descricao, data_inicio_processo, data_final_processo, data_matricula)
+        const result = await StudentModel.createStudent(nome, cpf, telefone, categoria, data_inicio_processo, data_final_processo)
 
         if (!result.data) {
             return res.status(400).json({

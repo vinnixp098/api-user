@@ -2,22 +2,29 @@ import express from "express";
 import conexao from "../../../config/db.js";
 import crypto from "crypto";
 
-const createStudent = async (nome, cpf, categoria, categoria_descricao, data_inicio_processo, data_final_processo, data_matricula) => {
+const createStudent = async (nome, cpf, telefone, categoria, data_inicio_processo, data_final_processo) => {
     try {
         const { rows: existingUsers } = await conexao.query(
             "SELECT nome FROM alunos WHERE cpf = $2",
             [cpf]
         );
 
+        const { rows: getGategory } = await conexao.query(
+            "SELECT categoria_descricao FROM categorias WHERE categoria = $4",
+            [categoria]
+        );
+
         if (existingUsers.length > 0) {
             return { status: 400, message: "O aluno já existe" };
         }
 
+        const hoje = new Date();
+
         // const token = crypto.createHash("md5").update(email + Date.now()).digest("hex");
 
         const { rows: result } = await conexao.query(
-            "INSERT INTO alunos (nome, cpf, categoria, categoria_descricao, data_inicio_processo, data_final_processo, data_matricula ) VALUES ($1, $2, $3, $4, $5, $6, $7) RETURNING *",
-            [nome, cpf, categoria, categoria_descricao, data_inicio_processo, data_final_processo, data_matricula]
+            "INSERT INTO alunos (nome, cpf, telefone, categoria, categoria_descricao, data_inicio_processo, data_final_processo, data_matricula ) VALUES ($1, $2, $3, $4, $5, $6, $7, ) RETURNING *",
+            [nome, cpf, telefone, categoria, getGategory, data_inicio_processo, data_final_processo, hoje]
         );
 
         return {
